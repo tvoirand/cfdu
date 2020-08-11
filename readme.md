@@ -10,7 +10,7 @@ Python 3 with the following packages:
 
 ## Installation
 
-*   Install the dependencies, for example with a conda environement using the `environment.yml` file
+*   Install the dependencies, for example with a conda environment using the `environment.yml` file
 
     `conda env create -f environment.yml`
 
