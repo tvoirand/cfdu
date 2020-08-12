@@ -74,7 +74,7 @@ def scan_ftp_folder(ftp, ftp_path, parent="root"):
 
             # add new file to this folder's children
             folder.children.append(
-                MyFile(element, parent=folder, size=file_size)
+                MyFile(os.path.basename(element), parent=folder, size=file_size)
             )
 
     return folder
@@ -100,7 +100,7 @@ def main(host, user, pwd):
     for i, element in enumerate(root_elements):
 
         # display scanning status to user
-        progress_string = "\rScanning: {}".format(element)
+        progress_string = "\rScanning: {}".format(os.path.join("/", element))
         width = int(os.popen("stty size", "r").read().split()[1])  # get terminal width
         progress_string = progress_string.ljust(width)[: width - 2]  # adjust display
         print(progress_string, end="", flush=True)
@@ -137,7 +137,7 @@ def main(host, user, pwd):
 
             # add new file to this folder's children
             root_folder.children.append(
-                MyFile(element, parent=root_folder, size=file_size)
+                MyFile(os.path.basename(element), parent=root_folder, size=file_size)
             )
 
     curses.wrapper(user_interface, root_folder)
