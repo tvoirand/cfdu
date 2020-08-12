@@ -146,9 +146,10 @@ def main(host, user, pwd):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-hst", "--host")
-    parser.add_argument("-usr", "--user")
-    parser.add_argument("-pwd", "--password")
+    required_arguments = parser.add_argument_group("required arguments")
+    required_arguments.add_argument("-hst", "--host", required=True)
+    required_arguments.add_argument("-usr", "--user", required=True)
+    required_arguments.add_argument("-pwd", "--password", required=True)
     args = parser.parse_args()
 
     main(args.host, args.user, args.password)
