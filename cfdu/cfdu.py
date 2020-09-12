@@ -7,6 +7,7 @@ import os
 import curses
 import ftplib
 import argparse
+import pysftp
 
 # local imports
 from user_interface import user_interface
@@ -14,11 +15,12 @@ from directory_tree import MyFile
 from directory_tree import MyFolder
 
 
-def scan_ftp_folder(ftp, ftp_path, parent="root"):
+def scan_ftp_folder(host, ftp, ftp_path, parent="root"):
     """
     Recursively scan folder on FTP server, computing size of each children.
     Input:
-        -ftp                    ftplib.FTP instance
+        -host                   str
+        -ftp                    ftplib.FTP instance or pysftp.Connection instance
         -ftp_path               str
             path of folder to scan on FTP server
         -parent                 MyFolder instance or "root"
@@ -31,7 +33,10 @@ def scan_ftp_folder(ftp, ftp_path, parent="root"):
     folder = MyFolder(os.path.basename(ftp_path), parent=parent)
 
     # get list of contents
-    contents_list = ftp.nlst(ftp_path)
+    if host.startswith("sftp"):
+        contents_list = ftp.listdir(ftp_path)
+    else:
+        contents_list = ftp.nlst(ftp_path)
 
     # loop through each element
     for element in contents_list:
@@ -49,7 +54,7 @@ def scan_ftp_folder(ftp, ftp_path, parent="root"):
 
             # scan subfolder
             subfolder = scan_ftp_folder(
-                ftp, os.path.join(ftp_path, element), parent=folder,
+                host, ftp, os.path.join(ftp_path, element), parent=folder,
             )
 
             # cd back to current folder
@@ -64,10 +69,13 @@ def scan_ftp_folder(ftp, ftp_path, parent="root"):
         except: # file case
 
             # get file size
-            ftp.voidcmd(
-                "TYPE I"
-            )  # avoid ftplib.error_perm: 550 SIZE not allowed in ASCII mode
-            file_size = ftp.size(os.path.join(ftp_path, element))
+            if host.startswith("sftp"):
+                file_size = ftp.stat(os.path.join(ftp_path, element)).st_size
+            else:
+                ftp.voidcmd(
+                    "TYPE I"
+                )  # avoid ftplib.error_perm: 550 SIZE not allowed in ASCII mode
+                file_size = ftp.size(os.path.join(ftp_path, element))
 
             # add size of file to this folder's size
             folder.size += file_size
@@ -90,13 +98,23 @@ def main(host, user, pwd):
     """
 
     # connect to ftp server
-    ftp = ftplib.FTP(host, user, pwd)
+    if host.startswith("sftp"):
+        # manage host key
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None # disable host key checking
+        ftp = pysftp.Connection(host, username=user, password=pwd, cnopts=cnopts)
+        ftp.cwd("/")
+    else:
+        ftp = ftplib.FTP(host, user, pwd)
 
     # initiate root folder
     root_folder = MyFolder("root", parent="root", level=0, size=0)
 
     # iterate through all elements in root folder
-    root_elements = ftp.nlst("")
+    if host.startswith("sftp"):
+        root_elements = ftp.listdir()
+    else:
+        root_elements = ftp.nlst("")
     for i, element in enumerate(root_elements):
 
         # display scanning status to user
@@ -112,7 +130,7 @@ def main(host, user, pwd):
 
             # scan subfolder
             subfolder = scan_ftp_folder(
-                ftp, os.path.join("/", element), parent=root_folder,
+                host, ftp, os.path.join("/", element), parent=root_folder,
             )
 
             # cd back to current folder
@@ -127,10 +145,13 @@ def main(host, user, pwd):
         except: # file case
 
             # get file size
-            ftp.voidcmd(
-                "TYPE I"
-            )  # avoid ftplib.error_perm: 550 SIZE not allowed in ASCII mode
-            file_size = ftp.size(element)
+            if host.startswith("sftp"):
+                file_size = ftp.stat(element).st_size
+            else:
+                ftp.voidcmd(
+                    "TYPE I"
+                )  # avoid ftplib.error_perm: 550 SIZE not allowed in ASCII mode
+                file_size = ftp.size(element)
 
             # add size of file to this folder's size
             root_folder.size += file_size

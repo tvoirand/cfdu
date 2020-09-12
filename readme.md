@@ -24,3 +24,4 @@ Python 3 with the following packages:
 ## Todo
 
 *   Add header and update footer
+*   Refactoring create custom ftp and sftp classes

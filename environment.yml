@@ -2,3 +2,4 @@ name: cfdu
 dependencies:
   - python=3
   - hurry.filesize
+  - pysftp
