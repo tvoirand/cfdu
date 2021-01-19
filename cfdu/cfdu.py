@@ -7,6 +7,8 @@ import os
 import curses
 import ftplib
 import argparse
+
+# third party imports
 import pysftp
 
 # local imports
