@@ -41,9 +41,12 @@ def render_folder_contents(folder, win, scrolling, max_lines, width):
 
         # add size bar
         size_bar = ""
-        nb_characters = math.floor(
-            child.size * 10 / largest_size
-        )  # compute nb characters
+        if largest_size == 0:
+            nb_characters = 0
+        else:
+            nb_characters = math.floor(
+                child.size * 10 / largest_size
+            )  # compute nb characters
         for i in range(nb_characters):
             size_bar += "#"  # fill size bar with characters
         size_bar = size_bar.ljust(10)  # add trailing whitespaces
