@@ -1,4 +1,6 @@
 name: cfdu
+channels:
+  - conda-forge
 dependencies:
   - python=3
   - hurry.filesize
