@@ -1,6 +1,8 @@
 # Curses FTP Drive Usage
 
-A terminal application to FTP server drive usage inspired from ncdu.
+A terminal application to display FTP server file space usage inspired from ncdu.
+
+<img src="docs/example.png" width="30%"/>
 
 ## Dependencies
 
