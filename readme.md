@@ -2,7 +2,7 @@
 
 A terminal application to display FTP server file space usage inspired from ncdu.
 
-<img src="docs/example.png" width="30%"/>
+<img src="docs/example.png" width="50%"/>
 
 ## Dependencies
 
