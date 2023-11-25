@@ -27,3 +27,7 @@ Python 3 with the following packages:
 
 *   Add header and update footer
 *   Refactoring create custom ftp and sftp classes
+
+## Contribute
+
+Please feel free to contribute by opening issues or pull-requests!
